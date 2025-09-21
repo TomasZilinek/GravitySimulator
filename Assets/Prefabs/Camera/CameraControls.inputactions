@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "name": "CameraControls",
+    "maps": [
+        {
+            "name": "CameraControls",
+            "id": "2c3d2d6a-04ba-4665-be61-da72695f49df",
+            "actions": [
+                {
+                    "name": "MouseZoom",
+                    "type": "PassThrough",
+                    "id": "4ce588de-b588-4672-88b7-8f45814f044a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c2d60d4e-bade-4407-806a-a42f07823103",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseZoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
