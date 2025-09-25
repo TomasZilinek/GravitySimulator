@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Cinemachine;
+using System.Security.Cryptography;
 
 public class CameraController : MonoBehaviour
 {
@@ -13,24 +14,49 @@ public class CameraController : MonoBehaviour
     public float minZoom = 2f;
     public float maxZoom = 100f;
 
-    private Vector2 panInput;
+    private Camera mainCamera;
+    private Vector3 dragOrigin;
+    private Vector3 dragDifference;
 
-    void Update()
+    private bool isDragging;
+
+    private Vector3 MousePosition => mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+
+    private void Awake()
     {
-        float zoomInput = zoomAction.action.ReadValue<float>();
-        if (Mathf.Abs(zoomInput) > 0.01f)
+        mainCamera = Camera.main;
+    }
+
+    private void LateUpdate()
+    {
+        if (!isDragging)
         {
-            ZoomTowardsMouse(zoomInput);
+            return;
         }
 
-        // Optional panning
-        // transform.position += (Vector3)panInput * panSpeed * Time.deltaTime;
+        dragDifference = MousePosition - transform.position;
+        transform.position = dragOrigin - dragDifference;
+    }
+
+    public void OnMouseZoom(InputAction.CallbackContext context)
+    {
+        float zoomInput = context.ReadValue<float>();
+        
+        ZoomTowardsMouse(zoomInput);
+    }
+
+    public void OnMouseDrag(InputAction.CallbackContext context)
+    {
+        isDragging = context.started || context.performed;
+
+        if (context.started)
+        {
+            dragOrigin = MousePosition;
+        }
     }
 
     private void ZoomTowardsMouse(float zoomInput)
     {
-        Camera cam = Camera.main;
-
         // Mouse position in screen coordinates (0 to 1)
         Vector2 mouseNormalized = new Vector2(
             Mouse.current.position.ReadValue().x / Screen.width,
@@ -45,7 +71,7 @@ public class CameraController : MonoBehaviour
         vCam.Lens.OrthographicSize = newSize;
 
         // Compute proportional offset
-        Vector3 mouseWorld = cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        Vector3 mouseWorld = mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         Vector3 offset = new Vector3(
             (mouseWorld.x - transform.position.x) * (1 - newSize / oldSize),
             (mouseWorld.y - transform.position.y) * (1 - newSize / oldSize),
